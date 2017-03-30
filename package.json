@@ -1,0 +1,36 @@
+{
+  "name": "redux-sync-reducer",
+  "version": "0.0.1",
+  "description": "High order reducer to sync partial states between tabs",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf lib",
+    "build": "BABEL_ENV=commonjs babel src --out-dir lib",
+    "prepublish": "npm run clean && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/darthmaim/redux-sync-reducer.git"
+  },
+  "keywords": [
+    "redux",
+    "sync"
+  ],
+  "author": "darthmaim",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/darthmaim/redux-sync-reducer/issues"
+  },
+  "homepage": "https://github.com/darthmaim/redux-sync-reducer#readme",
+  "devDependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-preset-es2015": "^6.24.0",
+    "rimraf": "^2.6.1"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  }
+}
