@@ -1,6 +1,6 @@
 {
   "name": "redux-sync-reducer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "High order reducer to sync partial states between tabs",
   "main": "lib/index.js",
   "scripts": {

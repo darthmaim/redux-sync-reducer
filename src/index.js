@@ -11,6 +11,7 @@ const isSupported = !!(window && window.localStorage);
  */
 const syncedReducers = [];
 
+const LOAD = '@@sync-reducer/init';
 
 /**
  * Get the type of the action.
@@ -49,14 +50,26 @@ export function syncedReducer(reducer, config = {}) {
     const name = config.name || reducer.toString();
     const actionType = getActionType(name);
 
+    let isLoaded = !!config.skipLoading;
+
     syncedReducers.push(name);
 
     return (state, action = {}, ...slices) => {
         switch(action.type) {
             case actionType:
                 return config.skipReducer ? action.payload : reducer(action.payload, action, ...slices);
+            case LOAD:
+                if(!isLoaded) {
+                    isLoaded = true;
+                    return isSupported
+                        ? JSON.parse(localStorage.getItem(getKeyName(name))) || state
+                        : state;
+                }
+                // fallthrough to default case if the state is already loaded
             default:
-                return sync(name, reducer(state, action, ...slices));
+                return isLoaded
+                    ? sync(name, reducer(state, action, ...slices))
+                    : reducer(state, action, ...slices);
         }
     }
 }
@@ -79,6 +92,9 @@ export const syncMiddleware = store => {
             return false;
         })
     });
+
+    // load all existing states from localStorage
+    store.dispatch({ type: LOAD });
 
     return next => action => next(action);
 }
