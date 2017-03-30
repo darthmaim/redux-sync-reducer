@@ -41,7 +41,7 @@ You can pass a config object to `syncedReducer`.
 
 option          | default     | description
 --------------- | ----------- | ------------
-**name**        | `reducer.toString()` | Pass a custom name for the reducer.<br>See [why you might need this](#When-using-multiple-different-syncedReducers-all-receive-the-same-state).
+**name**        | `reducer.toString()` | Pass a custom name for the reducer.<br>See [why you might need this](#when-using-multiple-different-syncedreducers-all-receive-the-same-state).
 **skipReducer** | `false` | When the internal action is dispatched, it will call your own reducer with the new value. You can skip this by setting `skipReducer` to `true`.
 
 ## Common issues
