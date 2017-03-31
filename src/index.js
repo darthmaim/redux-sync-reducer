@@ -11,21 +11,21 @@ const isSupported = !!(window && window.localStorage);
  */
 const syncedReducers = [];
 
-const LOAD = '@@sync-reducer/init';
-
 /**
- * Get the type of the action.
- * @param {string} name 
+ * Used action types.
+ * @readonly
+ * @enum {string}
  */
-function getActionType(name) {
-    return `@@sync-reducer/sync/${name}`;
+export const ActionTypes = {
+  INIT: '@@redux-sync-reducer/INIT',
+  UPDATE: '@@redux-sync-reducer/UPDATE',
 }
 
 /**
  * Get the key used in localStorage.
  */
 function getKeyName(name) {
-    return `@@sync-reducer/${name}`;
+    return `@@redux-sync-reducer/${name}`;
 }
 
 /**
@@ -48,29 +48,28 @@ function sync(name, data) {
  */
 export function syncedReducer(reducer, config = {}) {
     const name = config.name || reducer.toString();
-    const actionType = getActionType(name);
+    syncedReducers.push(name);
 
     let isLoaded = !!config.skipLoading;
 
-    syncedReducers.push(name);
-
     return (state, action = {}, ...slices) => {
-        switch(action.type) {
-            case actionType:
-                return config.skipReducer ? action.payload : reducer(action.payload, action, ...slices);
-            case LOAD:
-                if(!isLoaded) {
-                    isLoaded = true;
-                    return isSupported
-                        ? JSON.parse(localStorage.getItem(getKeyName(name))) || state
-                        : state;
-                }
-                // fallthrough to default case if the state is already loaded
-            default:
-                return isLoaded
-                    ? sync(name, reducer(state, action, ...slices))
-                    : reducer(state, action, ...slices);
+        if(action.type === ActionTypes.UPDATE && action.name === name) {
+            return config.skipReducer
+                ? action.payload
+                : reducer(action.payload, action, ...slices);
         }
+
+        if(action.type === ActionTypes.INIT && !isLoaded) {
+            isLoaded = true;
+
+            return isSupported
+                ? JSON.parse(localStorage.getItem(getKeyName(name))) || state
+                : state;
+        }
+
+        return isLoaded
+            ? sync(name, reducer(state, action, ...slices))
+            : reducer(state, action, ...slices);
     }
 }
 
@@ -81,9 +80,13 @@ export const syncMiddleware = store => {
     isSupported && window.addEventListener('storage', e => {
         syncedReducers.some(name => {
             if(e.key === getKeyName(name)) {
+                // don't use e.newValue because it doesn't work in IE
+                const payload = JSON.parse(localStorage.getItem(e.key));
+
                 store.dispatch({
-                    type: getActionType(name),
-                    payload: JSON.parse(e.newValue)
+                    type: ActionTypes.UPDATE,
+                    payload,
+                    name
                 });
 
                 return true;
@@ -94,7 +97,7 @@ export const syncMiddleware = store => {
     });
 
     // load all existing states from localStorage
-    store.dispatch({ type: LOAD });
+    store.dispatch({ type: ActionTypes.INIT });
 
     return next => action => next(action);
 }
