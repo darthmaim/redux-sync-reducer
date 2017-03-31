@@ -15,7 +15,7 @@ Wrap the reducers you want synced between tabs with `syncedReducer`.
 ```js
 import { syncedReducer } from 'redux-sync-reducer';
 
-syncedReduer(reducer);
+syncedReducer(reducer);
 ```
 
 You also need to add the `syncMiddleware` when creating your store. 
@@ -31,6 +31,7 @@ const store = createStore(reducers, applyMiddleware(syncMiddleware));
 
 ```js
 import { syncedReducer } from 'redux-sync-reducer';
+
 syncedReducer(reducer)
 syncedReducer(reducer, config)
 ```
