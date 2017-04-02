@@ -1,9 +1,13 @@
+const context = typeof window !== 'undefined' ? window : global
+
+const localStorage = context.localStorage;
+
 /** 
  * Checks if localStorage is supported.
  * @constant
  * @type {Boolean}
  */
-const isSupported = !!(window && window.localStorage);
+const isSupported = !!(localStorage);
 
 /**
  * List of all reducer names that are synced.
@@ -35,7 +39,7 @@ function getKeyName(name) {
  */
 function sync(name, data) {
     if(isSupported) {
-        window.localStorage.setItem(getKeyName(name), JSON.stringify(data));
+        localStorage.setItem(getKeyName(name), JSON.stringify(data));
     }
 
     return data;
@@ -62,9 +66,17 @@ export function syncedReducer(reducer, config = {}) {
         if(action.type === ActionTypes.INIT && !isLoaded) {
             isLoaded = true;
 
-            return isSupported
-                ? JSON.parse(localStorage.getItem(getKeyName(name))) || state
-                : state;
+            if(isSupported) {
+                const initialState = JSON.parse(localStorage.getItem(getKeyName(name)));
+
+                if(initialState) {
+                    return config.skipReducer
+                        ? initialState
+                        : reducer(initialState, action, ...slices);
+                } else {
+                    return reducer(state, action, ...slices)
+                }
+            } 
         }
 
         return isLoaded
@@ -77,7 +89,7 @@ export function syncedReducer(reducer, config = {}) {
  * Registers storage event listener and dispatches actions when the state gets changed in different tabs.
  */
 export const syncMiddleware = store => {
-    isSupported && window.addEventListener('storage', e => {
+    isSupported && context.addEventListener('storage', e => {
         syncedReducers.some(name => {
             if(e.key === getKeyName(name)) {
                 // don't use e.newValue because it doesn't work in IE
