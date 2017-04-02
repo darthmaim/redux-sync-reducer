@@ -1,5 +1,18 @@
 # redux-sync-reducer
 
+[![version][npm-badge]][npm]
+[![license][license-badge]](LICENSE)
+[![Travis][travis-badge]][travis]
+[![Coverage][coverage-badge]][coverage]
+
+[npm-badge]: https://img.shields.io/npm/v/redux-sync-reducer.svg?style=flat-square
+[license-badge]: https://img.shields.io/github/license/darthmaim/redux-sync-reducer.svg?style=flat-square
+[travis-badge]: https://img.shields.io/travis/darthmaim/redux-sync-reducer.svg?style=flat-square
+[coverage-badge]: https://img.shields.io/codecov/c/github/darthmaim/redux-sync-reducer.svg?style=flat-square
+[npm]: https://www.npmjs.com/package/redux-sync-reducer
+[travis]: https://travis-ci.org/darthmaim/redux-sync-reducer
+[coverage]: https://codecov.io/github/darthmaim/redux-sync-reducer
+
 High order reducer to sync states between tabs.
 
 ## Installation
