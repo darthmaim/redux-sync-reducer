@@ -7,7 +7,7 @@
   "scripts": {
     "test": "npm run test:coverage --silent",
     "test:coverage": "nyc --all --include=src --reporter=lcov --reporter=text-summary --report-dir=coverage npm run test:mocha",
-    "test:mocha": "mocha --compilers js:babel-core/register --require mock-local-storage tests/**/*.spec.js",
+    "test:mocha": "cross-env BABEL_ENV=commonjs mocha --compilers js:babel-core/register --require mock-local-storage tests/**/*.spec.js",
     "clean": "rimraf lib es dist",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
