@@ -2,8 +2,10 @@
 import { expect } from 'chai';
 import { ActionTypes, syncMiddleware, syncedReducer } from '../src/index';
 
-let lastEventListener; 
-global.addEventListener = (event, callback) => {
+const context = typeof window !== 'undefined' ? window : global;
+
+let lastEventListener;
+context.addEventListener = (event, callback) => {
     lastEventListener = {
         event, callback
     };
