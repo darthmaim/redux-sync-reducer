@@ -34,14 +34,15 @@ function getKeyName(name) {
 /**
  * Sync data between tabs.
  * @param {string} name 
- * @param {object} data 
+ * @param {object} prev
+ * @param {object} next 
  */
-function sync(name, data) {
-    if(isSupported) {
-        localStorage.setItem(getKeyName(name), JSON.stringify(data));
+function sync(name, prev, next) {
+    if(isSupported && prev !== next) {
+        localStorage.setItem(getKeyName(name), JSON.stringify(next));
     }
 
-    return data;
+    return next;
 }
 
 /**
@@ -69,7 +70,7 @@ export function syncedReducer(reducer, config = {}) {
             }
         }
         
-        return sync(name, reducer(state, action, ...slices));
+        return sync(name, state, reducer(state, action, ...slices));
     }
 }
 
