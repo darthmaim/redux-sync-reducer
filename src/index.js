@@ -53,8 +53,6 @@ export function syncedReducer(reducer, config = {}) {
     const name = config.name || reducer.toString();
     syncedReducers.push(name);
 
-    let isLoaded = !!config.skipLoading;
-
     return (state, action = {}, ...slices) => {
         if(action.type === ActionTypes.UPDATE && action.name === name) {
             return config.skipReducer
@@ -62,9 +60,7 @@ export function syncedReducer(reducer, config = {}) {
                 : reducer(action.payload, action, ...slices);
         }
 
-        if(!isLoaded) {
-            isLoaded = true;
-
+        if(state === undefined && !config.skipLoading) {
             if(isSupported) {
                 const initialState = JSON.parse(localStorage.getItem(getKeyName(name)));
 
