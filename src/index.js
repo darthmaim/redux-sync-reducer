@@ -73,7 +73,7 @@ export function syncedReducer(reducer, config = {}) {
             }
         }
         
-        return sync(name, reducer(state, action, ...slices))
+        return sync(name, reducer(state, action, ...slices));
     }
 }
 
