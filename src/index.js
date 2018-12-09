@@ -21,7 +21,6 @@ const syncedReducers = [];
  * @enum {string}
  */
 export const ActionTypes = {
-  INIT: '@@redux-sync-reducer/INIT',
   UPDATE: '@@redux-sync-reducer/UPDATE',
 }
 
@@ -63,25 +62,18 @@ export function syncedReducer(reducer, config = {}) {
                 : reducer(action.payload, action, ...slices);
         }
 
-        if(action.type === ActionTypes.INIT && !isLoaded) {
+        if(!isLoaded) {
             isLoaded = true;
 
             if(isSupported) {
                 const initialState = JSON.parse(localStorage.getItem(getKeyName(name)));
 
-                if(initialState) {
-                    return config.skipReducer
-                        ? initialState
-                        : reducer(initialState, action, ...slices);
-                } else {
-                    return reducer(state, action, ...slices)
-                }
-            } 
+                // we don't need to sync here, because other reducers also fallback
+                return reducer(initialState || state, action, ...slices);
+            }
         }
-
-        return isLoaded
-            ? sync(name, reducer(state, action, ...slices))
-            : reducer(state, action, ...slices);
+        
+        return sync(name, reducer(state, action, ...slices))
     }
 }
 
@@ -107,9 +99,6 @@ export const syncMiddleware = store => {
             return false;
         })
     });
-
-    // load all existing states from localStorage
-    store.dispatch({ type: ActionTypes.INIT });
 
     return next => action => next(action);
 }

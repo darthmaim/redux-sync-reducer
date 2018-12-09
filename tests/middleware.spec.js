@@ -31,14 +31,6 @@ describe('middleware', () => {
         localStorage.itemInsertionCallback = null;
     });
 
-    it('should dispatch init action', () => {
-        const store = buildStore();
-        syncMiddleware(store);
-
-        expect(store.dispatchedActions).to.have.length(1);
-        expect(store.dispatchedActions[0]).to.deep.equal({ type: ActionTypes.INIT });
-    });
-
     it('should be valid middleware', () => {
         const store = buildStore();
         const result = syncMiddleware(store);
@@ -62,22 +54,22 @@ describe('middleware', () => {
         syncMiddleware(store);
         const reducer = syncedReducer(() => {}, { name: 'test', skipLoading: true });
 
-        expect(store.dispatchedActions).to.have.length(1);
+        expect(store.dispatchedActions).to.have.length(0);
 
         lastEventListener.callback({ key: '@@redux-sync-reducer/test' });
 
-        expect(store.dispatchedActions).to.have.length(2);
-        expect(store.dispatchedActions[1]).to.deep.equal({ type: ActionTypes.UPDATE, name: 'test', payload: 1 });
+        expect(store.dispatchedActions).to.have.length(1);
+        expect(store.dispatchedActions[0]).to.deep.equal({ type: ActionTypes.UPDATE, name: 'test', payload: 1 });
     });
 
     it('should not dispatch update for non existing reducers', () => {
         const store = buildStore();
         syncMiddleware(store);
         
-        expect(store.dispatchedActions).to.have.length(1);
+        expect(store.dispatchedActions).to.have.length(0);
 
         lastEventListener.callback({ key: '@@redux-sync-reducer/non-existing' });
 
-        expect(store.dispatchedActions).to.have.length(1);
+        expect(store.dispatchedActions).to.have.length(0);
     });
 });
