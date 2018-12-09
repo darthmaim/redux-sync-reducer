@@ -1,6 +1,7 @@
 /* eslint-env node, mocha */
 import { expect } from 'chai';
 import { ActionTypes, syncMiddleware, syncedReducer } from '../src/index';
+import { createStore, applyMiddleware } from 'redux';
 
 const context = typeof window !== 'undefined' ? window : global;
 
@@ -72,4 +73,12 @@ describe('middleware', () => {
 
         expect(store.dispatchedActions).to.have.length(0);
     });
+
+    it('should work with real redux', () => {
+        const reducer = () => {};
+        const middlewares = applyMiddleware(syncMiddleware);
+        const creatingStore = createStore.bind(undefined, reducer, middlewares);
+
+        expect(creatingStore).to.not.throw();
+    })
 });
