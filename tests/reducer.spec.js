@@ -85,55 +85,38 @@ describe('reducer', () => {
     });
 
     describe('should load initial state', () => {
+        it('on first call', () => {
+            localStorage.setItem('@@redux-sync-reducer/test', '1');
+
+            const reducer = (state, action) => state;
+            const wrapped = syncedReducer(reducer, { name: 'test' });
+            const action = { type: 'test' };
+
+            const result = wrapped(undefined, action);
+            
+            expect(result).to.equal(1);
+        })
+
         it('and call reducer', () => {
             localStorage.setItem('@@redux-sync-reducer/test', '1');
 
             const reducer = (state, action) => state + 1;
             const wrapped = syncedReducer(reducer, { name: 'test' });
-
-            const action = { type: ActionTypes.INIT };
+            const action = { type: 'INCREMENT' };
 
             const result = wrapped(undefined, action);
             
             expect(result).to.equal(2);
         });
 
-
-        it('and call reducer', () => {
-            localStorage.setItem('@@redux-sync-reducer/test', '1');
-
-            const reducer = (state, action) => state + 1;
-            const wrapped = syncedReducer(reducer, { name: 'test', skipReducer: true });
-
-            const action = { type: ActionTypes.INIT };
-
-            const result = wrapped(undefined, action);
-            
-            expect(result).to.equal(1);
-        });
-
         it('and fallback to reducer', () => {
             const reducer = (state, action) => 'fallback';
             const wrapped = syncedReducer(reducer, { name: 'test', skipReducer: true });
-
-            const action = { type: ActionTypes.INIT };
+            const action = { type: '@test' };
 
             const result = wrapped(undefined, action);
             
             expect(result).to.equal('fallback');
-        });
-
-        it('and ignore subsequent inits', () => {
-            localStorage.setItem('@@redux-sync-reducer/test', '1');
-
-            const reducer = (state, action) => state + 1;
-            const wrapped = syncedReducer(reducer, { name: 'test' });
-
-            const action = { type: ActionTypes.INIT };
-
-            const result = wrapped(wrapped(undefined, action), action);
-            
-            expect(result).to.equal(3);
         });
     });
 });
